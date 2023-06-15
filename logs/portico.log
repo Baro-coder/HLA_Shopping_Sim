@@ -1,0 +1,63 @@
+ERROR [main] portico.lrc: parameter [507] not defined in [507]
+org.portico.lrc.compat.JInteractionParameterNotDefined: parameter [507] not defined in [507]
+	at org.portico.lrc.services.object.handlers.outgoing.SendInteractionHandler.validatePublication(SendInteractionHandler.java:135)
+	at org.portico.lrc.services.object.handlers.outgoing.SendInteractionHandler.process(SendInteractionHandler.java:85)
+	at org.portico.utils.messaging.MessageSink.process(MessageSink.java:187)
+	at org.portico.impl.hla13.Impl13Helper.processMessage(Impl13Helper.java:123)
+	at org.portico.impl.hla13.Rti13Ambassador.processMessage(Rti13Ambassador.java:5822)
+	at org.portico.impl.hla13.Rti13Ambassador.sendInteraction(Rti13Ambassador.java:2127)
+	at msk.proj.hla.storesim.cashes.CashesFederate.publishRegisterNewCash(CashesFederate.java:112)
+	at msk.proj.hla.storesim.cashes.CashesFederate.runFederate(CashesFederate.java:89)
+	at msk.proj.hla.storesim.cashes.CashesFederate.main(CashesFederate.java:175)
+ERROR [main] portico.lrc: parameter [507] not defined in [507]
+org.portico.lrc.compat.JInteractionParameterNotDefined: parameter [507] not defined in [507]
+	at org.portico.lrc.services.object.handlers.outgoing.SendInteractionHandler.validatePublication(SendInteractionHandler.java:135)
+	at org.portico.lrc.services.object.handlers.outgoing.SendInteractionHandler.process(SendInteractionHandler.java:85)
+	at org.portico.utils.messaging.MessageSink.process(MessageSink.java:187)
+	at org.portico.impl.hla13.Impl13Helper.processMessage(Impl13Helper.java:123)
+	at org.portico.impl.hla13.Rti13Ambassador.processMessage(Rti13Ambassador.java:5822)
+	at org.portico.impl.hla13.Rti13Ambassador.sendInteraction(Rti13Ambassador.java:2127)
+	at msk.proj.hla.storesim.cashes.CashesFederate.publishRegisterNewCash(CashesFederate.java:112)
+	at msk.proj.hla.storesim.cashes.CashesFederate.runFederate(CashesFederate.java:89)
+	at msk.proj.hla.storesim.cashes.CashesFederate.main(CashesFederate.java:175)
+ERROR [main] portico.lrc: parameter [507] not defined in [507]
+org.portico.lrc.compat.JInteractionParameterNotDefined: parameter [507] not defined in [507]
+	at org.portico.lrc.services.object.handlers.outgoing.SendInteractionHandler.validatePublication(SendInteractionHandler.java:135)
+	at org.portico.lrc.services.object.handlers.outgoing.SendInteractionHandler.process(SendInteractionHandler.java:85)
+	at org.portico.utils.messaging.MessageSink.process(MessageSink.java:187)
+	at org.portico.impl.hla13.Impl13Helper.processMessage(Impl13Helper.java:123)
+	at org.portico.impl.hla13.Rti13Ambassador.processMessage(Rti13Ambassador.java:5822)
+	at org.portico.impl.hla13.Rti13Ambassador.sendInteraction(Rti13Ambassador.java:2127)
+	at msk.proj.hla.storesim.cashes.CashesFederate.publishRegisterNewCash(CashesFederate.java:112)
+	at msk.proj.hla.storesim.cashes.CashesFederate.runFederate(CashesFederate.java:89)
+	at msk.proj.hla.storesim.cashes.CashesFederate.main(CashesFederate.java:175)
+ERROR [main] portico.lrc: name=StoreFederation
+org.portico.lrc.compat.JFederationExecutionDoesNotExist: name=StoreFederation
+	at org.portico.bindings.jgroups.LrcConnection.joinFederation(LrcConnection.java:248)
+	at org.portico.lrc.services.federation.handlers.outgoing.JoinFederationHandler.process(JoinFederationHandler.java:92)
+	at org.portico.utils.messaging.MessageSink.process(MessageSink.java:187)
+	at org.portico.impl.hla13.Impl13Helper.processMessage(Impl13Helper.java:123)
+	at org.portico.impl.hla13.Rti13Ambassador.processMessage(Rti13Ambassador.java:5822)
+	at org.portico.impl.hla13.Rti13Ambassador.joinFederationExecution(Rti13Ambassador.java:321)
+	at msk.proj.hla.storesim.store.StoreFederate.runFederate(StoreFederate.java:59)
+	at msk.proj.hla.storesim.store.StoreFederate.main(StoreFederate.java:154)
+ERROR [main] portico.lrc: name=StoreFederation
+org.portico.lrc.compat.JFederationExecutionDoesNotExist: name=StoreFederation
+	at org.portico.bindings.jgroups.LrcConnection.joinFederation(LrcConnection.java:248)
+	at org.portico.lrc.services.federation.handlers.outgoing.JoinFederationHandler.process(JoinFederationHandler.java:92)
+	at org.portico.utils.messaging.MessageSink.process(MessageSink.java:187)
+	at org.portico.impl.hla13.Impl13Helper.processMessage(Impl13Helper.java:123)
+	at org.portico.impl.hla13.Rti13Ambassador.processMessage(Rti13Ambassador.java:5822)
+	at org.portico.impl.hla13.Rti13Ambassador.joinFederationExecution(Rti13Ambassador.java:321)
+	at msk.proj.hla.storesim.cashes.CashesFederate.runFederate(CashesFederate.java:57)
+	at msk.proj.hla.storesim.cashes.CashesFederate.main(CashesFederate.java:178)
+ERROR [main] portico.lrc: name=StoreFederation
+org.portico.lrc.compat.JFederationExecutionDoesNotExist: name=StoreFederation
+	at org.portico.bindings.jgroups.LrcConnection.joinFederation(LrcConnection.java:248)
+	at org.portico.lrc.services.federation.handlers.outgoing.JoinFederationHandler.process(JoinFederationHandler.java:92)
+	at org.portico.utils.messaging.MessageSink.process(MessageSink.java:187)
+	at org.portico.impl.hla13.Impl13Helper.processMessage(Impl13Helper.java:123)
+	at org.portico.impl.hla13.Rti13Ambassador.processMessage(Rti13Ambassador.java:5822)
+	at org.portico.impl.hla13.Rti13Ambassador.joinFederationExecution(Rti13Ambassador.java:321)
+	at msk.proj.hla.storesim.store.StoreFederate.runFederate(StoreFederate.java:59)
+	at msk.proj.hla.storesim.store.StoreFederate.main(StoreFederate.java:154)

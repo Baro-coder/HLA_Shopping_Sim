@@ -1,0 +1,50 @@
+(FED
+  (Federation Portico-Test)
+  (FEDversion v1.3)
+  (spaces
+    (space ProjectSpace
+      (dimension ProjectDimension)
+    )
+    (space OtherSpace
+      (dimension OtherDimension)
+    )
+  )
+  (interactions
+    (class InteractionRoot reliable timestamp
+      (class RTIprivate reliable timestamp)
+
+      ;; New cash created -- should be added to Store's list of cashes ;;
+      (class NewCashRegister reliable timestamp ProjectSpace
+        (parameter cashId)
+      )
+
+      ;; New client int the store -- should be added to Store's list of clients -- Client lifecycle start ;;
+      (class NewClientArrival reliable timestamp ProjectSpace
+        (parameter clientId)
+      )
+
+      ;; Client ended his shopping -- wait for get into the queue to pay ;;
+      (class ClientShoppingEnd reliable timestamp ProjectSpace
+        (parameter clientId)
+      )
+
+      ;; Client assign to cash register queue ;;
+      (class ClientQueueGet reliable timestamp ProjectSpace
+        (parameter clientId)
+        (parameter cashId)
+      )
+
+      ;; Client started payment process -- cash register taken ;;
+      (class ClientServiceStart reliable timestamp ProjectSpace
+        (parameter clientId)
+        (parameter cashId)
+      )
+
+      ;; Client ended payment process -- cash register released -- Client lifecycle end ;;
+      (class ClientServiceEnd reliable timestamp ProjectSpace
+        (parameter clientId)
+        (parameter cashId)
+      )
+    )
+  )
+)
