@@ -1,15 +1,23 @@
 package msk.proj.hla.storesim.cashes;
 
+import hla.rti.ArrayIndexOutOfBounds;
 import hla.rti.EventRetractionHandle;
 import hla.rti.LogicalTime;
 import hla.rti.ReceivedInteraction;
+import hla.rti.jlc.EncodingHelpers;
 import hla.rti.jlc.NullFederateAmbassador;
+import msk.proj.hla.storesim.cashes.som.Cash;
+import msk.proj.hla.storesim.clients.ClientsFederate;
+import msk.proj.hla.storesim.clients.som.Client;
 import msk.proj.hla.storesim.store.StoreFederate;
 import org.portico.impl.hla13.types.DoubleTime;
 
 public class CashesAmbassador  extends NullFederateAmbassador {
     private final static String COMPONENT_NAME = "CashesAmbassador";
     protected int NEW_CASH_REGISTER_HANDLE = 0;
+    protected int CLIENT_QUEUE_GET = 0;
+    protected int CLIENT_SERVICE_START = 0;
+    protected int CLIENT_SERVICE_END = 0;
     protected double federateTime        = 0.0;
     protected double federateLookahead   = 10.0;
     protected boolean isRegulating       = false;
@@ -18,6 +26,7 @@ public class CashesAmbassador  extends NullFederateAmbassador {
     protected boolean isAnnounced        = false;
     protected boolean isReadyToRun       = false;
     protected boolean running 			 = true;
+    protected CashesFederate fedObject    = null;
 
     private static void log(String message)
     {
@@ -37,6 +46,24 @@ public class CashesAmbassador  extends NullFederateAmbassador {
                                     LogicalTime theTime,
                                     EventRetractionHandle eventRetractionHandle )
     {
+        StringBuilder builder = new StringBuilder("Received Interaction: ");
+
+        if (interactionClass == CLIENT_QUEUE_GET) {
+            try {
+                int cashId = EncodingHelpers.decodeInt(theInteraction.getValue(0));
+                int clientId = EncodingHelpers.decodeInt(theInteraction.getValue(1));
+                int clientGoodsAmount = EncodingHelpers.decodeInt(theInteraction.getValue(2));
+
+                builder.append("Client Queue Get : cashId(").append(cashId).append(") : clientId(").append(clientId).append(") : clientGoodsAmount(").append(clientGoodsAmount).append(")");
+
+                fedObject.enqueueClient(cashId, new Client(clientId, clientGoodsAmount));
+
+            } catch (ArrayIndexOutOfBounds e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        log(builder.toString());
     }
 
     public void synchronizationPointRegistrationFailed( String label )

@@ -9,6 +9,9 @@ import org.portico.impl.hla13.types.DoubleTime;
 
 public class ClientsAmbassador extends NullFederateAmbassador {
     private final static String COMPONENT_NAME = "ClientsAmbassador";
+    protected int NEW_CLIENT_ARRIVAL = 0;
+    protected int CLIENT_SHOPPING_END = 0;
+
     protected double federateTime        = 0.0;
     protected double federateLookahead   = 10.0;
     protected boolean isRegulating       = false;
@@ -17,6 +20,7 @@ public class ClientsAmbassador extends NullFederateAmbassador {
     protected boolean isAnnounced        = false;
     protected boolean isReadyToRun       = false;
     protected boolean running 			 = true;
+    protected ClientsFederate fedObject    = null;
 
     private static void log(String message)
     {

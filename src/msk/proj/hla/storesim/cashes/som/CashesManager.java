@@ -1,5 +1,7 @@
 package msk.proj.hla.storesim.cashes.som;
 
+import msk.proj.hla.storesim.clients.som.Client;
+
 import java.util.ArrayList;
 
 public class CashesManager {
@@ -14,12 +16,20 @@ public class CashesManager {
         this.cashesMaxCount = cashesMaxCount;
     }
 
-    public int registerNewCash(){
-//        if (cashes.size() < cashesMaxCount) {
+    public Cash registerNewCash(){
+        if (cashes.size() < cashesMaxCount) {
             Cash cash = new Cash();
             cashes.add(cash);
-            return cash.getId();
-//        }
-//        return -1;
+            return cash;
+        }
+        return null;
+    }
+
+    public void enqueueClient(int cashId, Client client) {
+        for(Cash cash : cashes) {
+            if (cash.getId() == cashId) {
+                cash.enqueueClient(client);
+            }
+        }
     }
 }

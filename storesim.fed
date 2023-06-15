@@ -14,36 +14,50 @@
       (class RTIprivate reliable timestamp)
 
       ;; New cash created -- should be added to Store's list of cashes ;;
+      ;; publish: Cashes ;;
+      ;; subscribe: Store ;;
       (class NewCashRegister reliable timestamp ProjectSpace
         (parameter cashId)
       )
 
       ;; New client int the store -- should be added to Store's list of clients -- Client lifecycle start ;;
+      ;; publish: Clients
+      ;; subscribe: Store
       (class NewClientArrival reliable timestamp ProjectSpace
         (parameter clientId)
+        (parameter goodsAmount)
       )
 
       ;; Client ended his shopping -- wait for get into the queue to pay ;;
+      ;; publish: Clients
+      ;; subscribe: Store
       (class ClientShoppingEnd reliable timestamp ProjectSpace
         (parameter clientId)
       )
 
       ;; Client assign to cash register queue ;;
+      ;; publish: Store
+      ;; subscribe: Cashes
       (class ClientQueueGet reliable timestamp ProjectSpace
-        (parameter clientId)
         (parameter cashId)
+        (parameter clientId)
+        (parameter goodsAmount)
       )
 
       ;; Client started payment process -- cash register taken ;;
+      ;; publish: Cashes
+      ;; subscribe: Store
       (class ClientServiceStart reliable timestamp ProjectSpace
-        (parameter clientId)
         (parameter cashId)
+        (parameter clientId)
       )
 
       ;; Client ended payment process -- cash register released -- Client lifecycle end ;;
+      ;; publish: Cashes
+      ;; subscribe: Store
       (class ClientServiceEnd reliable timestamp ProjectSpace
-        (parameter clientId)
         (parameter cashId)
+        (parameter clientId)
       )
     )
   )

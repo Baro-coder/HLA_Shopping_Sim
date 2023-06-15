@@ -1,7 +1,10 @@
 package msk.proj.hla.storesim.clients;
 
 import hla.rti.*;
+import hla.rti.jlc.EncodingHelpers;
 import hla.rti.jlc.RtiFactoryFactory;
+import msk.proj.hla.storesim.cashes.som.Cash;
+import msk.proj.hla.storesim.clients.som.Client;
 import msk.proj.hla.storesim.clients.som.ClientsManager;
 import org.portico.impl.hla13.types.DoubleTime;
 import org.portico.impl.hla13.types.DoubleTimeInterval;
@@ -10,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.Random;
 
 public class ClientsFederate {
     private final static String COMPONENT_NAME = "ClientsFederate";
@@ -52,6 +56,7 @@ public class ClientsFederate {
 
         /* FEDERATE JOIN */
         fedAmbassador = new ClientsAmbassador();
+        fedAmbassador.fedObject = this;
         rtiAmbassador.joinFederationExecution(COMPONENT_NAME, FEDERATION_NAME, fedAmbassador );
         log( "Joined Federation as " + COMPONENT_NAME);
 
@@ -83,6 +88,13 @@ public class ClientsFederate {
         /* FEDERATE MAIN LOOP */
         while (fedAmbassador.running) {
             advanceTime(TIME_STEP);
+
+            // Interaction :: Publish :: New Client Arrival
+            Client client = clientsManager.bringNewClient();
+            if(client != null) {
+                publishNewClientArrival(client);
+            }
+
             rtiAmbassador.tick();
         }
     }
@@ -108,7 +120,15 @@ public class ClientsFederate {
     }
 
     private void publishAndSubscribe() throws RTIexception {
+        // New Client Arrival - Publish
+        int newClientArrival = rtiAmbassador.getInteractionClassHandle("InteractionRoot.NewClientArrival");
+        fedAmbassador.NEW_CLIENT_ARRIVAL = newClientArrival;
+        rtiAmbassador.publishInteractionClass(newClientArrival);
 
+        // Client Shopping End - Publish
+        int clientShoppingEnd = rtiAmbassador.getInteractionClassHandle("InteractionRoot.ClientShoppingEnd");
+        fedAmbassador.CLIENT_SHOPPING_END = clientShoppingEnd;
+        rtiAmbassador.publishInteractionClass(clientShoppingEnd);
     }
 
     private void advanceTime(double step) throws RTIexception {
@@ -137,6 +157,61 @@ public class ClientsFederate {
             log( "Error while waiting for user input: " + e.getMessage() );
             e.printStackTrace();
         }
+    }
+
+    /* === INTERACTION HANDLERS === */
+    // Interaction :: Publish :: NewClientArrival
+    public void publishNewClientArrival(Client client) throws RTIexception {
+        // Interaction handler
+        int newClientArrivalHandle = rtiAmbassador.getInteractionClassHandle("InteractionRoot.NewClientArrival");
+
+        // Params handler
+        SuppliedParameters params = RtiFactoryFactory.getRtiFactory().createSuppliedParameters();
+
+        // Params dump
+        int clientIdHandle = rtiAmbassador.getParameterHandle("clientId", newClientArrivalHandle);
+        byte[] clientIdValue = EncodingHelpers.encodeInt(client.getId());
+        params.add(clientIdHandle, clientIdValue);
+
+        int goodsAmountHandle = rtiAmbassador.getParameterHandle("goodsAmount", newClientArrivalHandle);
+        byte[] goodsAmountValue = EncodingHelpers.encodeInt(client.getGoodsAmount());
+        params.add(goodsAmountHandle, goodsAmountValue);
+
+        // Interaction time set
+        LogicalTime time = new DoubleTime(fedAmbassador.federateTime + fedAmbassador.federateLookahead);
+
+        // Send interaction
+        rtiAmbassador.sendInteraction(newClientArrivalHandle, params, "tag".getBytes(), time);
+
+        // Log
+        log("New Client Arrival : " + "clientId(" + client.getId() + ") : goodsAmount(" + client.getGoodsAmount() + ") :: time : " + time);
+
+        // Send interaction of client shopping end in advance
+        publishClientShoppingEnd(client.getId());
+    }
+
+    // Interaction :: Publish :: ClientShoppingEnd
+    public void publishClientShoppingEnd(int clientId) throws RTIexception{
+        // Interaction handler
+        int clientShoppingEndHandle = rtiAmbassador.getInteractionClassHandle("InteractionRoot.ClientShoppingEnd");
+
+        // Params handler
+        SuppliedParameters params = RtiFactoryFactory.getRtiFactory().createSuppliedParameters();
+
+        // Params dump
+        int clientIdHandle = rtiAmbassador.getParameterHandle("clientId", clientShoppingEndHandle);
+        byte[] clientIdValue = EncodingHelpers.encodeInt(clientId);
+        params.add(clientIdHandle, clientIdValue);
+
+        // Interaction time set
+        int delay = ClientsManager.getClientRandomShoppingTime();
+        LogicalTime time = new DoubleTime(fedAmbassador.federateTime + fedAmbassador.federateLookahead + delay);
+
+        // Send interaction
+        rtiAmbassador.sendInteraction(clientShoppingEndHandle, params, "tag".getBytes(), time);
+
+        // Log
+        log("Client Shopping End : " + "clientId(" + clientId + ") :: time : " + time);
     }
 
     public static void main(String[] args) {
