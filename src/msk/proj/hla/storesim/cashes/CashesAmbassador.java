@@ -7,6 +7,7 @@ import hla.rti.ReceivedInteraction;
 import hla.rti.jlc.EncodingHelpers;
 import hla.rti.jlc.NullFederateAmbassador;
 import msk.proj.hla.storesim.cashes.som.Cash;
+import msk.proj.hla.storesim.cashes.som.CashesManager;
 import msk.proj.hla.storesim.clients.ClientsFederate;
 import msk.proj.hla.storesim.clients.som.Client;
 import msk.proj.hla.storesim.store.StoreFederate;
@@ -26,7 +27,7 @@ public class CashesAmbassador  extends NullFederateAmbassador {
     protected boolean isAnnounced        = false;
     protected boolean isReadyToRun       = false;
     protected boolean running 			 = true;
-    protected CashesFederate fedObject    = null;
+    protected CashesManager cashesManager = null;
 
     private static void log(String message)
     {
@@ -46,7 +47,7 @@ public class CashesAmbassador  extends NullFederateAmbassador {
                                     LogicalTime theTime,
                                     EventRetractionHandle eventRetractionHandle )
     {
-        StringBuilder builder = new StringBuilder("Received Interaction: ");
+        StringBuilder builder = new StringBuilder("Received Interaction :: ");
 
         if (interactionClass == CLIENT_QUEUE_GET) {
             try {
@@ -56,7 +57,7 @@ public class CashesAmbassador  extends NullFederateAmbassador {
 
                 builder.append("Client Queue Get : cashId(").append(cashId).append(") : clientId(").append(clientId).append(") : clientGoodsAmount(").append(clientGoodsAmount).append(")");
 
-                fedObject.enqueueClient(cashId, new Client(clientId, clientGoodsAmount));
+                cashesManager.enqueueClient(cashId, new Client(clientId, clientGoodsAmount));
 
             } catch (ArrayIndexOutOfBounds e) {
                 throw new RuntimeException(e);

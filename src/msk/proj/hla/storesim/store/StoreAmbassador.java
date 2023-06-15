@@ -5,6 +5,7 @@ import hla.rti.jlc.EncodingHelpers;
 import hla.rti.jlc.NullFederateAmbassador;
 import msk.proj.hla.storesim.cashes.som.Cash;
 import msk.proj.hla.storesim.clients.som.Client;
+import msk.proj.hla.storesim.store.som.Store;
 import org.portico.impl.hla13.types.DoubleTime;
 
 public class StoreAmbassador extends NullFederateAmbassador {
@@ -24,7 +25,8 @@ public class StoreAmbassador extends NullFederateAmbassador {
     protected boolean isAnnounced        = false;
     protected boolean isReadyToRun       = false;
     protected boolean running 			 = true;
-    protected StoreFederate fedObject    = null;
+    protected Store store = null;
+    protected int clientToSendId = -1;
 
     private static void log(String message)
     {
@@ -44,7 +46,7 @@ public class StoreAmbassador extends NullFederateAmbassador {
                                     LogicalTime theTime,
                                     EventRetractionHandle eventRetractionHandle )
     {
-        StringBuilder builder = new StringBuilder( "Interaction Received:" );
+        StringBuilder builder = new StringBuilder( "Interaction Received :: " );
 
         if (interactionClass == NEW_CASH_REGISTER_HANDLE) {
             try {
@@ -52,7 +54,7 @@ public class StoreAmbassador extends NullFederateAmbassador {
 
                 builder.append("New Cash Register : cashId(").append(newCashId).append(")");
 
-                fedObject.registerNewCash(new Cash(newCashId));
+                store.addCashRegister(new Cash(newCashId));
 
             } catch (ArrayIndexOutOfBounds e) {
                 throw new RuntimeException(e);
@@ -64,7 +66,7 @@ public class StoreAmbassador extends NullFederateAmbassador {
 
                 builder.append("New Client Arrival : clientId(").append(newClientId).append(") : goodsAmount(").append(newClientGoodsAmount).append(")");
 
-                fedObject.noticeNewClientArrival(new Client(newClientId, newClientGoodsAmount));
+                store.addClient(new Client(newClientId, newClientGoodsAmount));
 
             } catch (ArrayIndexOutOfBounds e) {
                 throw new RuntimeException(e);
@@ -75,31 +77,31 @@ public class StoreAmbassador extends NullFederateAmbassador {
 
                 builder.append("Client Shopping End : clientId(").append(clientId).append(")");
 
-                fedObject.sendClientToQueue(clientId);
+                clientToSendId = clientId;
 
             } catch (RTIexception e) {
                 throw new RuntimeException(e);
             }
         } else if (interactionClass == CLIENT_SERVICE_START) {
-            int cashId = 0;
+            int cashId;
             try {
                 cashId = EncodingHelpers.decodeInt(theInteraction.getValue(0));
 
                 builder.append("Client Service Start : cashId(").append(cashId).append(")");
 
-                fedObject.noticeClientServiceStart(cashId);
+                store.noticeClientServiceStart(cashId, federateTime);
 
             } catch (ArrayIndexOutOfBounds e) {
                 throw new RuntimeException(e);
             }
         } else if (interactionClass == CLIENT_SERVICE_END) {
-            int cashId = 0;
+            int cashId;
             try {
                 cashId = EncodingHelpers.decodeInt(theInteraction.getValue(0));
 
                 builder.append("Client Service End : cashId(").append(cashId).append(")");
 
-                fedObject.noticeClientServiceEnd(cashId);
+                store.noticeClientServiceEnd(cashId);
 
             } catch (ArrayIndexOutOfBounds e) {
                 throw new RuntimeException(e);

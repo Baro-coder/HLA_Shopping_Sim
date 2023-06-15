@@ -14,15 +14,17 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CashesFederate {
+    private final static double SIMULATION_TIME = 2000.0;
     private final static String COMPONENT_NAME = "CashesFederate";
     private final static String FEDERATION_NAME = "StoreSimFederation";
     public static final String READY_TO_RUN = "READY_TO_RUN";
     private static final String FED_FILEPATH = "storesim.fed";
     private RTIambassador rtiAmbassador;
     private CashesAmbassador fedAmbassador;
-    private CashesManager cashesManager;
     private final double TIME_STEP = 10.0;
 
     private static void log(String message)
@@ -31,9 +33,6 @@ public class CashesFederate {
     }
 
     public void runFederate() throws RTIexception {
-        /* LOGIC MODEL CONSTRUCTION*/
-        cashesManager = new CashesManager();
-
         /* FEDERATION CREATION */
         rtiAmbassador = RtiFactoryFactory.getRtiFactory().createRtiAmbassador();
 
@@ -56,7 +55,8 @@ public class CashesFederate {
 
         /* FEDERATE JOIN */
         fedAmbassador = new CashesAmbassador();
-        fedAmbassador.fedObject = this;
+        /* LOGIC MODEL CONSTRUCTION*/
+        fedAmbassador.cashesManager = new CashesManager();
         rtiAmbassador.joinFederationExecution(COMPONENT_NAME, FEDERATION_NAME, fedAmbassador );
         log( "Joined Federation as " + COMPONENT_NAME);
 
@@ -89,13 +89,39 @@ public class CashesFederate {
         while (fedAmbassador.running) {
             advanceTime(TIME_STEP);
 
+            // Simulation end condition
+            if(fedAmbassador.federateTime > SIMULATION_TIME) {
+                break;
+            }
+
             // Interaction :: Publish :: New Cash Register
-            Cash cash = cashesManager.registerNewCash();
+            Cash cash = fedAmbassador.cashesManager.registerNewCash();
             if(cash != null) {
                 publishRegisterNewCash(cash.getId());
             }
 
+            // Interaction :: Publish :: Client Service Start / End
+            examineCashQueues();
+
             rtiAmbassador.tick();
+        }
+    }
+
+    private void examineCashQueues() throws RTIexception {
+        // Check for cashes ready to release for next client
+        List<Integer> cashesIdList = fedAmbassador.cashesManager.getCashesIdToEndService(fedAmbassador.federateTime);
+        if (cashesIdList.size() > 0) {
+            for (int cashId : cashesIdList) {
+                publishClientServiceEnd(cashId, fedAmbassador.cashesManager.getCashById(cashId).getId());
+            }
+        }
+
+        // Check for available cashes to service the clients
+        cashesIdList = fedAmbassador.cashesManager.getCashesIdToStartService(fedAmbassador.federateTime);
+        if (cashesIdList.size() > 0) {
+            for (int cashId : cashesIdList) {
+                publishClientServiceStart(cashId, fedAmbassador.cashesManager.getCashById(cashId).getId());
+            }
         }
     }
 
@@ -193,11 +219,59 @@ public class CashesFederate {
         log("New Cash Register : " + "cashId(" + cashId + ") :: time : " + time);
     }
 
-    // Interaction :: Subscribe :: ClientQueueGet
-    public void enqueueClient(int cashId, Client client) {
-        cashesManager.enqueueClient(cashId, client);
+    // Interaction :: Publish :: ClientServiceStart
+    private void publishClientServiceStart(int cashId, int clientId) throws RTIexception{
+        // Interaction handler
+        int clientServiceStartHandle = rtiAmbassador.getInteractionClassHandle("InteractionRoot.ClientServiceStart");
+
+        // Params handler
+        SuppliedParameters params = RtiFactoryFactory.getRtiFactory().createSuppliedParameters();
+
+        // Params dump
+        int cashIdHandle = rtiAmbassador.getParameterHandle("cashId", clientServiceStartHandle);
+        byte[] cashIdValue = EncodingHelpers.encodeInt(cashId);
+        params.add(cashIdHandle, cashIdValue);
+
+        int clientIdHandle = rtiAmbassador.getParameterHandle("clientId", clientServiceStartHandle);
+        byte[] clientIdValue = EncodingHelpers.encodeInt(clientId);
+        params.add(clientIdHandle, clientIdValue);
+
+        // Interaction time set
+        LogicalTime time = new DoubleTime(fedAmbassador.federateTime + fedAmbassador.federateLookahead);
+
+        // Send interaction
+        rtiAmbassador.sendInteraction(clientServiceStartHandle, params, "tag".getBytes(), time);
+
+        // Log
+        log("Client Service Start : " + "cashId(" + cashId + ") :: time : " + time);
     }
 
+    // Interaction :: Publish :: ClientServiceEnd
+    private void publishClientServiceEnd(int cashId, int clientId) throws RTIexception{
+        // Interaction handler
+        int clientServiceEndHandle = rtiAmbassador.getInteractionClassHandle("InteractionRoot.ClientServiceEnd");
+
+        // Params handler
+        SuppliedParameters params = RtiFactoryFactory.getRtiFactory().createSuppliedParameters();
+
+        // Params dump
+        int cashIdHandle = rtiAmbassador.getParameterHandle("cashId", clientServiceEndHandle);
+        byte[] cashIdValue = EncodingHelpers.encodeInt(cashId);
+        params.add(cashIdHandle, cashIdValue);
+
+        int clientIdHandle = rtiAmbassador.getParameterHandle("clientId", clientServiceEndHandle);
+        byte[] clientIdValue = EncodingHelpers.encodeInt(clientId);
+        params.add(clientIdHandle, clientIdValue);
+
+        // Interaction time set
+        LogicalTime time = new DoubleTime(fedAmbassador.federateTime + fedAmbassador.federateLookahead);
+
+        // Send interaction
+        rtiAmbassador.sendInteraction(clientServiceEndHandle, params, "tag".getBytes(), time);
+
+        // Log
+        log("Client Service End : " + "cashId(" + cashId + ") :: time : " + time);
+    }
 
     public static void main(String[] args) {
         try {

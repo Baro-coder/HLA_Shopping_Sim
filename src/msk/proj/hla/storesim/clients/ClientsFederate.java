@@ -16,13 +16,13 @@ import java.net.MalformedURLException;
 import java.util.Random;
 
 public class ClientsFederate {
+    private final static double SIMULATION_TIME = 2000.0;
     private final static String COMPONENT_NAME = "ClientsFederate";
     private final static String FEDERATION_NAME = "StoreSimFederation";
     public static final String READY_TO_RUN = "READY_TO_RUN";
     private static final String FED_FILEPATH = "storesim.fed";
     private RTIambassador rtiAmbassador;
     private ClientsAmbassador fedAmbassador;
-    private ClientsManager clientsManager;
     private final double TIME_STEP = 10.0;
 
     private static void log(String message)
@@ -31,9 +31,6 @@ public class ClientsFederate {
     }
 
     public void runFederate() throws RTIexception {
-        /* LOGIC MODEL CONSTRUCTION*/
-        clientsManager = new ClientsManager();
-
         /* FEDERATION CREATION */
         rtiAmbassador = RtiFactoryFactory.getRtiFactory().createRtiAmbassador();
 
@@ -56,7 +53,8 @@ public class ClientsFederate {
 
         /* FEDERATE JOIN */
         fedAmbassador = new ClientsAmbassador();
-        fedAmbassador.fedObject = this;
+        /* LOGIC MODEL CONSTRUCTION*/
+        fedAmbassador.clientsManager = new ClientsManager();
         rtiAmbassador.joinFederationExecution(COMPONENT_NAME, FEDERATION_NAME, fedAmbassador );
         log( "Joined Federation as " + COMPONENT_NAME);
 
@@ -89,8 +87,13 @@ public class ClientsFederate {
         while (fedAmbassador.running) {
             advanceTime(TIME_STEP);
 
+            // Simulation end condition
+            if(fedAmbassador.federateTime > SIMULATION_TIME) {
+                break;
+            }
+
             // Interaction :: Publish :: New Client Arrival
-            Client client = clientsManager.bringNewClient();
+            Client client = fedAmbassador.clientsManager.bringNewClient();
             if(client != null) {
                 publishNewClientArrival(client);
             }

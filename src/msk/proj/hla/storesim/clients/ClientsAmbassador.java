@@ -4,6 +4,7 @@ import hla.rti.EventRetractionHandle;
 import hla.rti.LogicalTime;
 import hla.rti.ReceivedInteraction;
 import hla.rti.jlc.NullFederateAmbassador;
+import msk.proj.hla.storesim.clients.som.ClientsManager;
 import msk.proj.hla.storesim.store.StoreFederate;
 import org.portico.impl.hla13.types.DoubleTime;
 
@@ -20,7 +21,7 @@ public class ClientsAmbassador extends NullFederateAmbassador {
     protected boolean isAnnounced        = false;
     protected boolean isReadyToRun       = false;
     protected boolean running 			 = true;
-    protected ClientsFederate fedObject    = null;
+    protected ClientsManager clientsManager;
 
     private static void log(String message)
     {

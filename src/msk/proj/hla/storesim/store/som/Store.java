@@ -34,6 +34,15 @@ public class Store {
         return null;
     }
 
+    public Cash getCashById(int cashId){
+        for(Cash cash : cashes) {
+            if (cash.getId() == cashId) {
+                return cash;
+            }
+        }
+        return null;
+    }
+
     public int sendClientToTheShortestQueue(Client client) {
         int cashId = -1;
         int minQueueLen = -1;
@@ -45,6 +54,27 @@ public class Store {
             }
         }
 
+        if (cashId != -1){
+            getCashById(cashId).enqueueClient(client);
+        }
+
         return cashId;
+    }
+
+    public void noticeClientServiceStart(int cashId, double currentTime) {
+        Cash cash = getCashById(cashId);
+
+        if (cash != null) {
+            cash.takeTheCash(currentTime);
+        }
+    }
+
+    public void noticeClientServiceEnd(int cashId) {
+        Cash cash = getCashById(cashId);
+
+        if (cash != null) {
+            cash.releaseTheCash();
+            cash.dequeueFirstClient();
+        }
     }
 }

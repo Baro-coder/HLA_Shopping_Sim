@@ -16,18 +16,16 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 
 public class StoreFederate {
+    private final static double SIMULATION_TIME = 2000.0;
     private final static String COMPONENT_NAME = "StoreFederate";
     private final static String FEDERATION_NAME = "StoreSimFederation";
     public static final String READY_TO_RUN = "READY_TO_RUN";
     private static final String FED_FILEPATH = "storesim.fed";
     private RTIambassador rtiAmbassador;
     private StoreAmbassador fedAmbassador;
-    private Store store;
     private final double TIME_STEP = 10.0;
 
-    public StoreFederate() {
-
-    }
+    public StoreFederate() {}
 
     private static void log(String message)
     {
@@ -35,9 +33,6 @@ public class StoreFederate {
     }
 
     public void runFederate() throws RTIexception{
-        /* LOGIC/DATA MODEL CONSTRUCTION*/
-        store = new Store();
-
         /* FEDERATION CREATION */
         rtiAmbassador = RtiFactoryFactory.getRtiFactory().createRtiAmbassador();
 
@@ -60,7 +55,8 @@ public class StoreFederate {
 
         /* FEDERATE JOIN */
         fedAmbassador = new StoreAmbassador();
-        fedAmbassador.fedObject = this;
+        /* LOGIC/DATA MODEL CONSTRUCTION*/
+        fedAmbassador.store = new Store();
         rtiAmbassador.joinFederationExecution(COMPONENT_NAME, FEDERATION_NAME, fedAmbassador);
         log( "Joined Federation as " + COMPONENT_NAME);
 
@@ -92,6 +88,18 @@ public class StoreFederate {
         /* FEDERATE MAIN LOOP */
         while (fedAmbassador.running) {
             advanceTime(TIME_STEP);
+
+            // Simulation end condition
+            if(fedAmbassador.federateTime > SIMULATION_TIME) {
+                break;
+            }
+
+            // Interaction :: Publish :: Client Queue Get
+            if(fedAmbassador.clientToSendId != -1) {
+                sendClientToQueue();
+                fedAmbassador.clientToSendId = -1;
+            }
+
             rtiAmbassador.tick();
         }
     }
@@ -179,22 +187,13 @@ public class StoreFederate {
     }
 
     /* === INTERACTION HANDLERS === */
-    // Interaction :: Subscribe :: NewCashRegister
-    public void registerNewCash(Cash cash) {
-        store.addCashRegister(cash);
-    }
-
-    // Interaction :: Subscribe :: NewClientArrival
-    public void noticeNewClientArrival(Client client) {
-        store.addClient(client);
-    }
-
-    // Interaction :: Subscribe :: ClientShoppingEnd &&
     // Interaction :: Publish :: ClientQueueGet
-    public void sendClientToQueue(int clientId) throws RTIexception{
-        Client client = store.getClientById(clientId);
+    public void sendClientToQueue() throws RTIexception{
+        int clientId = fedAmbassador.clientToSendId;
+        Client client = fedAmbassador.store.getClientById(clientId);
+
         if (client != null) {
-            int cashId = store.sendClientToTheShortestQueue(client);
+            int cashId = fedAmbassador.store.sendClientToTheShortestQueue(client);
             if (cashId != -1) {
                 // Interaction handler
                 int clientQueueGetHandle = rtiAmbassador.getInteractionClassHandle("InteractionRoot.ClientQueueGet");
@@ -216,8 +215,7 @@ public class StoreFederate {
                 params.add(goodsAmountHandle, goodsAmountValue);
 
                 // Interaction time set
-                int delay = ClientsManager.getClientRandomShoppingTime();
-                LogicalTime time = new DoubleTime(fedAmbassador.federateTime + fedAmbassador.federateLookahead + delay);
+                LogicalTime time = new DoubleTime(fedAmbassador.federateTime + fedAmbassador.federateLookahead);
 
                 // Send interaction
                 rtiAmbassador.sendInteraction(clientQueueGetHandle, params, "tag".getBytes(), time);
