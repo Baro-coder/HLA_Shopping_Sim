@@ -1,24 +1,20 @@
-package msk.proj.hla.storesim.cashes;
+package msk.proj.hla.storesim.statistics;
 
-import hla.rti.ArrayIndexOutOfBounds;
-import hla.rti.EventRetractionHandle;
-import hla.rti.LogicalTime;
-import hla.rti.ReceivedInteraction;
+import hla.rti.*;
 import hla.rti.jlc.EncodingHelpers;
 import hla.rti.jlc.NullFederateAmbassador;
 import msk.proj.hla.storesim.cashes.som.Cash;
-import msk.proj.hla.storesim.cashes.som.CashesManager;
-import msk.proj.hla.storesim.clients.ClientsFederate;
 import msk.proj.hla.storesim.clients.som.Client;
 import msk.proj.hla.storesim.store.StoreFederate;
 import org.portico.impl.hla13.types.DoubleTime;
 
-public class CashesAmbassador  extends NullFederateAmbassador {
-    private final static String COMPONENT_NAME = "CashesAmbassador";
+public class StatisticsAmbassador extends NullFederateAmbassador {
+    private final static String COMPONENT_NAME = "StatisticsAmbassador";
     protected int NEW_CASH_REGISTER_HANDLE = 0;
     protected int CLIENT_QUEUE_GET = 0;
     protected int CLIENT_SERVICE_START = 0;
     protected int CLIENT_SERVICE_END = 0;
+
     protected double federateTime        = 0.0;
     protected double federateLookahead   = 10.0;
     protected boolean isRegulating       = false;
@@ -27,11 +23,11 @@ public class CashesAmbassador  extends NullFederateAmbassador {
     protected boolean isAnnounced        = false;
     protected boolean isReadyToRun       = false;
     protected boolean running 			 = true;
-    protected CashesManager cashesManager = null;
+    protected Statistics statistics = null;
 
     private static void log(String message)
     {
-        System.out.println( COMPONENT_NAME + " : " + message );
+        System.out.println(COMPONENT_NAME + " : " + message);
     }
 
     public void receiveInteraction( int interactionClass,
@@ -47,17 +43,55 @@ public class CashesAmbassador  extends NullFederateAmbassador {
                                     LogicalTime theTime,
                                     EventRetractionHandle eventRetractionHandle )
     {
-        StringBuilder builder = new StringBuilder("Received Interaction :: ");
+        StringBuilder builder = new StringBuilder( "Interaction Received :: " );
 
-        if (interactionClass == CLIENT_QUEUE_GET) {
+        if (interactionClass == NEW_CASH_REGISTER_HANDLE) {
             try {
-                int cashId = EncodingHelpers.decodeInt(theInteraction.getValue(0));
-                int clientId = EncodingHelpers.decodeInt(theInteraction.getValue(1));
-                int clientGoodsAmount = EncodingHelpers.decodeInt(theInteraction.getValue(2));
+                int newCashId = EncodingHelpers.decodeInt(theInteraction.getValue(0));
 
-                builder.append("Client Queue Get : cashId(").append(cashId).append(") : clientId(").append(clientId).append(") : clientGoodsAmount(").append(clientGoodsAmount).append(")");
+                builder.append("New Cash Register : cashId(").append(newCashId).append(")");
 
-                cashesManager.enqueueClient(cashId, new Client(clientId, clientGoodsAmount), federateTime);
+                statistics.addNewCash(newCashId);
+
+            } catch (ArrayIndexOutOfBounds e) {
+                throw new RuntimeException(e);
+            }
+        } else if (interactionClass == CLIENT_QUEUE_GET) {
+            int cashId;
+            int clientId;
+            int goodsAmount;
+            try {
+                cashId = EncodingHelpers.decodeInt(theInteraction.getValue(0));
+                clientId = EncodingHelpers.decodeInt(theInteraction.getValue(1));
+                goodsAmount = EncodingHelpers.decodeInt(theInteraction.getValue(2));
+
+                builder.append("Client Queue Get : cashId(").append(cashId).append(")");
+
+                statistics.addClientToQueue(cashId, clientId, goodsAmount, federateTime);
+
+            } catch (ArrayIndexOutOfBounds e) {
+                throw new RuntimeException(e);
+            }
+        } else if (interactionClass == CLIENT_SERVICE_START) {
+            int cashId;
+            try {
+                cashId = EncodingHelpers.decodeInt(theInteraction.getValue(0));
+
+                builder.append("Client Service Start : cashId(").append(cashId).append(")");
+
+                statistics.cashServiceStart(cashId);
+
+            } catch (ArrayIndexOutOfBounds e) {
+                throw new RuntimeException(e);
+            }
+        } else if (interactionClass == CLIENT_SERVICE_END) {
+            int cashId;
+            try {
+                cashId = EncodingHelpers.decodeInt(theInteraction.getValue(0));
+
+                builder.append("Client Service End : cashId(").append(cashId).append(")");
+
+                statistics.cashServiceEnd(cashId);
 
             } catch (ArrayIndexOutOfBounds e) {
                 throw new RuntimeException(e);

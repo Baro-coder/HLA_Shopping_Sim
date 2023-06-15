@@ -17,7 +17,7 @@ import java.util.Random;
 
 public class ClientsFederate {
     private final static double SIMULATION_TIME = 2000.0;
-    private final static String COMPONENT_NAME = "ClientsFederate";
+    private final static String COMPONENT_NAME = "ClientsFederate  ";
     private final static String FEDERATION_NAME = "StoreSimFederation";
     public static final String READY_TO_RUN = "READY_TO_RUN";
     private static final String FED_FILEPATH = "storesim.fed";
@@ -187,7 +187,7 @@ public class ClientsFederate {
         rtiAmbassador.sendInteraction(newClientArrivalHandle, params, "tag".getBytes(), time);
 
         // Log
-        log("New Client Arrival : " + "clientId(" + client.getId() + ") : goodsAmount(" + client.getGoodsAmount() + ") :: time : " + time);
+        log("Interaction Publish  :: New Client Arrival : " + "clientId(" + client.getId() + ") : goodsAmount(" + client.getGoodsAmount() + ") :: time : " + time);
 
         // Send interaction of client shopping end in advance
         publishClientShoppingEnd(client.getId());
@@ -214,7 +214,7 @@ public class ClientsFederate {
         rtiAmbassador.sendInteraction(clientShoppingEndHandle, params, "tag".getBytes(), time);
 
         // Log
-        log("Client Shopping End : " + "clientId(" + clientId + ") :: time : " + time);
+        log("Interaction Publish  :: Client Shopping End : " + "clientId(" + clientId + ") :: time : " + time);
     }
 
     public static void main(String[] args) {

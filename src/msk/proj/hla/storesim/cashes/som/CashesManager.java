@@ -7,15 +7,11 @@ import java.util.List;
 
 public class CashesManager {
     private final static double CLIENT_SERVICE_TIME_FACTOR = 50.0;
-    private int cashesMaxCount = 4;
+    private final static int CASHES_MAX_COUNT = 8;
     private ArrayList<Cash> cashes;
 
     public CashesManager() {
         cashes = new ArrayList<>();
-    }
-    public CashesManager(int cashesMaxCount) {
-        cashes = new ArrayList<>();
-        this.cashesMaxCount = cashesMaxCount;
     }
 
     public Cash getCashById(int cashId){
@@ -28,7 +24,7 @@ public class CashesManager {
     }
 
     public Cash registerNewCash(){
-        if (cashes.size() < cashesMaxCount) {
+        if (cashes.size() < CASHES_MAX_COUNT) {
             Cash cash = new Cash();
             cashes.add(cash);
             return cash;
@@ -36,10 +32,10 @@ public class CashesManager {
         return null;
     }
 
-    public void enqueueClient(int cashId, Client client) {
+    public void enqueueClient(int cashId, Client client, double currentTime) {
         for(Cash cash : cashes) {
             if (cash.getId() == cashId) {
-                cash.enqueueClient(client);
+                cash.enqueueClient(client, currentTime);
             }
         }
     }

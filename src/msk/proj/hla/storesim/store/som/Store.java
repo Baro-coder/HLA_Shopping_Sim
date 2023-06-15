@@ -43,7 +43,7 @@ public class Store {
         return null;
     }
 
-    public int sendClientToTheShortestQueue(Client client) {
+    public int sendClientToTheShortestQueue(Client client, double currentTime) {
         int cashId = -1;
         int minQueueLen = -1;
 
@@ -55,7 +55,7 @@ public class Store {
         }
 
         if (cashId != -1){
-            getCashById(cashId).enqueueClient(client);
+            getCashById(cashId).enqueueClient(client, currentTime);
         }
 
         return cashId;
@@ -74,7 +74,6 @@ public class Store {
 
         if (cash != null) {
             cash.releaseTheCash();
-            cash.dequeueFirstClient();
         }
     }
 }

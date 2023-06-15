@@ -7,6 +7,7 @@ public class Client {
     private final static int MAX_GOODS_AMOUNT = 20;
     private final int id;
     private final int goodsAmount;
+    private double enqueueTime = -1;
     private double serviceStartTime = -1;
     private double serviceEndTime = -1;
 
@@ -32,9 +33,14 @@ public class Client {
 
     public double getServiceStartTime() { return serviceStartTime; }
     public double getServiceEndTime() { return serviceEndTime; }
+    public double getEnqueueTime() {
+        return enqueueTime;
+    }
 
     // Setters
     public void setServiceStartTime(double serviceStartTime) { this.serviceStartTime = serviceStartTime; }
     public void setServiceEndTime(double serviceEndTime) { this.serviceEndTime = serviceEndTime; }
-
+    public void setEnqueueTime(double enqueueTime) {
+        this.enqueueTime = enqueueTime;
+    }
 }

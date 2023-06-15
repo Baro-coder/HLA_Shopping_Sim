@@ -19,7 +19,7 @@ import java.util.List;
 
 public class CashesFederate {
     private final static double SIMULATION_TIME = 2000.0;
-    private final static String COMPONENT_NAME = "CashesFederate";
+    private final static String COMPONENT_NAME = "CashesFederate  ";
     private final static String FEDERATION_NAME = "StoreSimFederation";
     public static final String READY_TO_RUN = "READY_TO_RUN";
     private static final String FED_FILEPATH = "storesim.fed";
@@ -243,7 +243,7 @@ public class CashesFederate {
         rtiAmbassador.sendInteraction(clientServiceStartHandle, params, "tag".getBytes(), time);
 
         // Log
-        log("Client Service Start : " + "cashId(" + cashId + ") :: time : " + time);
+        log("Interaction Publish  :: Client Service Start : " + "cashId(" + cashId + ") :: time : " + time);
     }
 
     // Interaction :: Publish :: ClientServiceEnd
@@ -270,7 +270,7 @@ public class CashesFederate {
         rtiAmbassador.sendInteraction(clientServiceEndHandle, params, "tag".getBytes(), time);
 
         // Log
-        log("Client Service End : " + "cashId(" + cashId + ") :: time : " + time);
+        log("Interaction Publish  :: Client Service End : " + "cashId(" + cashId + ") :: time : " + time);
     }
 
     public static void main(String[] args) {
