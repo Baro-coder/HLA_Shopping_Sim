@@ -275,7 +275,7 @@ int MAX_GOODS_AMOUNT = 20;
   - 5 :: 1168.50
   - 6 :: 227.31
   - 7 :: 212.50
- * Average: 594.01
+ * Average: 648.95
 
  Max serviced clients count: 
    * cash ID:           1
