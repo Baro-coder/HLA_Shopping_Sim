@@ -96,7 +96,7 @@ Interaction reports that new cash register is available to service.
 
 **Parameters:**
 
-``` java
+```java
 int cashId;     // cash register ID
 ```
 
@@ -116,7 +116,7 @@ Interaction reports that new client has already arrived to the store.
 
 **Parameters:**
 
-``` java
+```java
 int clientId;       // client ID
 int goodsAmount;    // amount of products that client bought
 ```
@@ -136,7 +136,7 @@ Interaction reports that the specified client has ended his shopping process.
 
 **Parameters:**
 
-``` java
+```java
 int clientId;       // client ID
 ```
 
@@ -156,7 +156,7 @@ Interaction indicates queue that specified client get into.
 
 **Parameters:**
 
-``` java
+```java
 int cashId;         // cash register ID
 int clientId;       // client ID
 int goodsAmount;    // amount of products that client bought
@@ -178,7 +178,7 @@ Interaction reports that specified cash register has started to service the firs
 
 **Parameters:**
 
-``` java
+```java
 int cashId;         // cash register ID
 int clientId;       // client ID
 ```
@@ -199,7 +199,7 @@ Interaction reports that specified cash register has ended servicing the first c
 
 **Parameters:**
 
-``` java
+```java
 int cashId;         // cash register ID
 int clientId;       // client ID
 ```
@@ -234,7 +234,7 @@ of products client can buy.
 
 Example output is produced with the following set of sumulation variables:
 
-``` java
+```java
 // Each *Federate.java file
 double SIMULATION_TIME = 2000.0;
 
