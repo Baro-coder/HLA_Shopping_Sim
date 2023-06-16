@@ -4,7 +4,7 @@
 
 ---
 
-### **Content**
+### **Content:**
 
 #### 1. [Description](#description)
 
@@ -81,9 +81,9 @@ at the end of simulation.
 
 ## **Interactions**
 
-Interaction reports that new cash register is available to service.
-
 ### New Cash Register
+
+Interaction reports that new cash register is available to service.
 
 **Publisher:**
 
