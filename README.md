@@ -273,8 +273,8 @@ int MAX_GOODS_AMOUNT = 20;
   - 3 :: 251.00
   - 4 :: 1239.28
   - 5 :: 1168.50
-  - 6 :: 0.00
-  - 7 :: 0.00
+  - 6 :: 227.31
+  - 7 :: 212.50
  * Average: 594.01
 
  Max serviced clients count: 
