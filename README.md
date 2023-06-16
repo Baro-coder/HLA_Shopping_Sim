@@ -244,7 +244,7 @@ double MIN_SHOPPING_TIME = 500.0;
 
 // CashesManager.java
 double CLIENT_SERVICE_TIME_FACTOR = 50.0;
-int CASHES_MAX_COUNT = 6;
+int CASHES_MAX_COUNT = 8;
 
 // Client.java
 int MAX_GOODS_AMOUNT = 20;
