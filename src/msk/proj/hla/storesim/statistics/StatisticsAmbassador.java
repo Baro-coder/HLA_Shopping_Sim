@@ -3,8 +3,7 @@ package msk.proj.hla.storesim.statistics;
 import hla.rti.*;
 import hla.rti.jlc.EncodingHelpers;
 import hla.rti.jlc.NullFederateAmbassador;
-import msk.proj.hla.storesim.cashes.som.Cash;
-import msk.proj.hla.storesim.clients.som.Client;
+import msk.proj.hla.storesim.statistics.som.Statistics;
 import msk.proj.hla.storesim.store.StoreFederate;
 import org.portico.impl.hla13.types.DoubleTime;
 

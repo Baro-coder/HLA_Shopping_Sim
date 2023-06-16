@@ -1,4 +1,4 @@
-package msk.proj.hla.storesim.statistics;
+package msk.proj.hla.storesim.statistics.som;
 
 import msk.proj.hla.storesim.cashes.som.Cash;
 import msk.proj.hla.storesim.clients.som.Client;

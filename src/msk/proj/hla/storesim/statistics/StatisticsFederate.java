@@ -2,6 +2,7 @@ package msk.proj.hla.storesim.statistics;
 
 import hla.rti.*;
 import hla.rti.jlc.RtiFactoryFactory;
+import msk.proj.hla.storesim.statistics.som.Statistics;
 import org.portico.impl.hla13.types.DoubleTime;
 import org.portico.impl.hla13.types.DoubleTimeInterval;
 
